@@ -13,7 +13,9 @@ import lombok.NoArgsConstructor;
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
+
         @Column(name = "text")
+
         private String text;
 
         @ManyToOne
