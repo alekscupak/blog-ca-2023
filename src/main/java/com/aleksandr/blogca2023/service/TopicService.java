@@ -1,16 +1,17 @@
-package com.aleksandr.blogca2023.entity;
+package com.aleksandr.blogca2023.service;
 
+import com.aleksandr.blogca2023.entities.Topic;
 import com.aleksandr.blogca2023.repo.TopicRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
+
 @Service
 public class TopicService {
 
     @Autowired
-   private TopicRepository topicRepository;
+    private TopicRepository topicRepository;
 
     public TopicService(TopicRepository topicRepository) {
         this.topicRepository = topicRepository;
@@ -30,6 +31,11 @@ public class TopicService {
 
     public Topic getTopic(Long id) {
         return topicRepository.findById(id).get();
+    }
+
+    public List<Topic> filterTopicsByKeyword(String keyword) {
+        return topicRepository.findTopicsByKeyword(keyword);
+
     }
 
 }
