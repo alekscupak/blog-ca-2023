@@ -5,11 +5,17 @@ import com.aleksandr.blogca2023.entities.Comment;
 import com.aleksandr.blogca2023.entities.Topic;
 import com.aleksandr.blogca2023.service.CommentService;
 import com.aleksandr.blogca2023.service.TopicService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 @Controller
 @RequestMapping("/topics")
 public class TopicController {
@@ -21,13 +27,6 @@ public class TopicController {
         this.topicService = topicService;
         this.commentService = commentService;
     }
-
-  //  @GetMapping("/filter")
-  //  public String filterTopics(@RequestParam String topicTitle, Model model) {
-   //     List<Topic> topics = topicService.findTopicsByTitle(topicTitle);
-   //     model.addAttribute("topics", topics);
-  //      return "topics";
-  //  }
 
     @GetMapping
     public String getTopics(Model model) {
@@ -53,8 +52,6 @@ public class TopicController {
         return "redirect:/topics/" + id;
     }
 
-
-
     @GetMapping("/add")
     public String getAddTopicForm(Model model) {
         model.addAttribute("newTopic", new Topic());
@@ -66,8 +63,6 @@ public class TopicController {
         topicService.addNewTopic(newTopic);
         return "redirect:/topics";
     }
-
-
     @GetMapping("/filter")
     public String filterTopics(@RequestParam String keyword, Model model) {
         List<Topic> topics = topicService.filterTopicsByKeyword(keyword);
@@ -75,5 +70,29 @@ public class TopicController {
         return "topics";
     }
 
+    @GetMapping("/list")
+    public String listBooks(Model model, @RequestParam("page") Optional<Integer> page, @RequestParam("size") Optional<Integer> size) {
+        final int currentPage = page.orElse(1);
+        final int pageSize = size.orElse(5);
+
+        Page<Topic> bookPage = topicService.findPaginated(PageRequest.of(currentPage - 1, pageSize));
+
+        model.addAttribute("topicPage", bookPage);
+
+        int totalPages = bookPage.getTotalPages();
+        if (totalPages > 0) {
+            List<Integer> pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+            model.addAttribute("pageNumbers", pageNumbers);
+        }
+
+        return "listTopics";
+    }
+
+    @GetMapping("/international")
+    public String getInternationalPage() {
+        return "international";
+    }
 
 }
